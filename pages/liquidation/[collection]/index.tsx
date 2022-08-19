@@ -20,7 +20,6 @@ const LiquidationPool = () => {
   const { program } = useAnchor();
   // create wallet instance for PK
   const wallet = useConnectedWallet();
-
   /**
     * @description sets program | market | connection | wallet
     * @params none
@@ -32,8 +31,7 @@ const LiquidationPool = () => {
     * @params connection | wallet | honeyprogramID | honeymarketID
     * @returns loading | nft positions | error
   */
-   const { ...status } = useAllPositions(sdkConfig.saberHqConnection, sdkConfig.sdkWallet!, sdkConfig.honeyId, sdkConfig.marketId);
-
+  const { ...status } = useAllPositions(sdkConfig.saberHqConnection, sdkConfig.sdkWallet!, sdkConfig.honeyId, sdkConfig.marketId);
   /**
     * @description the obligations that are being rendered
     * @params none
@@ -77,6 +75,7 @@ const LiquidationPool = () => {
     
     // console.log('Sorted Bidding Array:', highestBid);
     console.log('this is biddingArray', highestBid)
+    console.log('this is sorted', sorted)
 
     // highestBid.map((obj:any) => {
     //   console.log(`bid: ${obj.highest_bid} owner: ${obj.owner.toString()}`);
@@ -102,6 +101,10 @@ const LiquidationPool = () => {
     if (status.positions) {
       setStatusState(true);
     }
+
+    if (status.bids && status.positions) handleBiddingState(status.bids, status.positions);
+
+    return;
   }, [status]);
 
   useEffect(() => {
@@ -116,10 +119,10 @@ const LiquidationPool = () => {
         }
       });
 
-      console.log('STATUS.OBJ', status);
-
       handleBiddingState(status.bids, status.positions);
     }
+
+    return;
   }, [statusState]);
 
   /**
@@ -142,8 +145,6 @@ const LiquidationPool = () => {
             bid_mint: NATIVE_MINT,
             withdraw_destination: wallet.publicKey
           });
-
-
 
           console.log('@@__Transaction_Outcome revoke bid:', transactionOutcome[0]);
 
@@ -201,16 +202,30 @@ const LiquidationPool = () => {
           return toastResponse('ERROR', 'Bid failed', 'ERROR');
         }
   }
-
+  /**
+   * @description changes state of bidding modal | inits fetchLiq. func
+   * @params type, being type of bid | userbid being the amount, is optional |
+   * @returns inits fetchLiq. func
+  */
   async function handleExecuteBid(type: string, userBid?: number) {
     console.log('running executeBid')
     handleShowBiddingModal();
     await fetchLiquidatorClient(type, userBid!)
   }
 
-  useEffect(() => {
-    if (currentUserBid) console.log('this is currentUserBid', currentUserBid);
-  }, [currentUserBid])
+  useEffect(() => {}, [currentUserBid]);
+
+  function handleRefetch() {
+    console.log('handle refetch initialized');
+    setTimeout(async () => {
+      console.log('handle refetch running');
+      if (status) {
+        status.fetchPositions().then(() => {
+          console.log('updated statusObject', status);
+        })
+      }
+    }, 60000)
+  }
 
   return (
     <Layout>
@@ -288,9 +303,9 @@ const LiquidationPool = () => {
                 handleShowBiddingModal={handleShowBiddingModal}
                 handleExecuteBid={handleExecuteBid}
                 hasPosition={hasPosition}
-                stringyfiedWalletPK={stringyfiedWalletPK}
                 highestBiddingAddress={highestBiddingAddress}
                 highestBiddingValue={highestBiddingValue}
+                handleRefetch={handleRefetch}
               />
             )
           }

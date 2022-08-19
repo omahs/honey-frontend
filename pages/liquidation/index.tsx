@@ -14,14 +14,6 @@ import  { ConfigureSDK, toastResponse } from '../../helpers/loanHelpers';
  * @params none
  * @returns typed object
 */
-interface OpenObligation {
-  address: PublicKey,
-  debt: number,
-  highest_bid: number,
-  is_healthy: string,
-  ltv: number,
-}
-
 interface NftPosition {
   obligation: string;
   debt: number;
@@ -53,7 +45,6 @@ const Liquidation: NextPage = () => {
    * @returns state variables
   */
   const [openPositions, setOpenPositions] = useState(false);
-  const [loadingState, setLoadingState] = useState(true);
   const [fetchedPositions, setFetchedPositions] = useState<Array<NftPosition>>([]);
   const [totalMarketDebt, setTotalMarketDebt] = useState(0);
   const [totalMarketNFTs, setTotalMarketNFTs] = useState(0);
@@ -78,23 +69,8 @@ const Liquidation: NextPage = () => {
    * @params none
    * @returns array of header data used for header component
   */
-  const headerData = [ 'Collection', 'Total Collateral', 'Total Debt','Average LTV', '']
-  
-  /**
-   * @description validates if user has outstanding bid or not
-   * @params none
-   * @returns toastresponse with state of outstanding bid
-  */
-  function validatePositions(openPositions: boolean) {
-    setTimeout(() => {
-      console.log('this is openPos', openPositions)
-      openPositions
-      ?
-      toastResponse('LIQUIDATION', '1 oustanding bid', 'LIQUIDATION')
-      :
-      toastResponse('LIQUIDATION', 'No outstanding bid', 'LIQUIDATION')
-    }, 5000)
-  }
+  const headerData = [ 'Collection', 'Total Collateral', 'Total Debt','Average LTV', ''];
+
   // create stringyfied instance of walletPK
   let stringyfiedWalletPK = sdkConfig.sdkWallet?.publicKey.toString();
   
@@ -107,6 +83,7 @@ const Liquidation: NextPage = () => {
     let val = 0 
     
     biddingArray.map((obligation: any, index: number) => {
+      console.log('this is stringyfiedwalletpk', stringyfiedWalletPK);
       if (obligation.bidder == stringyfiedWalletPK) {
         setOpenPositions(true);
         val = 1;
@@ -114,9 +91,9 @@ const Liquidation: NextPage = () => {
     });
 
     if (val == 1) {
-      toastResponse('LIQUIDATION', '1 oustanding bid', 'LIQUIDATION')
+      toastResponse('LIQUIDATION', '1 oustanding bid', 'LIQUIDATION');
     } else {
-      toastResponse('LIQUIDATION', 'No outstanding bid', 'LIQUIDATION')
+      toastResponse('LIQUIDATION', 'No outstanding bid', 'LIQUIDATION');
     }
   }
   
@@ -131,6 +108,8 @@ const Liquidation: NextPage = () => {
       setTotalMarketNFTs(status.positions.length);
       handleBiddingState(status.bids);
     }
+
+    return;
   }, [status]);
 
   /**
@@ -139,19 +118,22 @@ const Liquidation: NextPage = () => {
    * @returns sets totalmarketdebt and averagemarketlvt state
   */
   async function calculateMarketValues(market: any) {
-    // total market debt
-    let tmd = 0;
-    // average market ltv
-    let amltv = 0;
+    if (market.length) {
+      // total market debt
+      let tmd = 0;
+      // average market ltv
+      let amltv = 0;
 
-    await market.map((m: any) => {
-      tmd += m.debt;
-      amltv += m.ltv
-    });
-    
-    setTotalMarketDebt(tmd);
-    setaverageMarketLVT(amltv / market.length);
+      await market.map((m: any) => {
+        tmd += m.debt
+        amltv += m.ltv
+      });
+
+      setTotalMarketDebt(tmd);
+      setaverageMarketLVT(amltv / market.length);
+    }
   }
+
   // if there are positions init the average calculations
   if (fetchedPositions) calculateMarketValues(fetchedPositions);
 

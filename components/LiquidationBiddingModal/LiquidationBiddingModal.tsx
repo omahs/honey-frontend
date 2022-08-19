@@ -1,63 +1,58 @@
-import type { NextPage } from 'next';
-import React, { useState, useEffect } from 'react';
-import { Box, Stack, Button, IconChevronLeft, Text, Avatar } from 'degen';
-import Layout from '../../components/Layout/Layout';
+import React, { useState } from 'react';
+import { Box, Button, Text } from 'degen';
 import * as styles from './LiquidationBiddingModal.css';
-import Link from 'next/link';
 import { IconClose } from 'degen';
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { toastResponse } from 'helpers/loanHelpers';
-
 interface LiquidationBiddingModalProps {
   handleShowBiddingModal: () => void;
   handleExecuteBid: (val: any, userBid?: number) => void;
   hasPosition: boolean;
-  stringyfiedWalletPK: any;
   highestBiddingAddress: string;
   highestBiddingValue: number;
+  handleRefetch: () => void;
 }
 
 const LiquidationBiddingModal = (props: LiquidationBiddingModalProps) => {
-  const {handleShowBiddingModal, handleExecuteBid, hasPosition, stringyfiedWalletPK, highestBiddingAddress, highestBiddingValue} = props;
-
+  const {handleShowBiddingModal, handleExecuteBid, hasPosition, highestBiddingAddress, highestBiddingValue, handleRefetch} = props;
+  // state to determine which buttons to show regarding position or no position
   const [confirmState, setConfirmState] = useState(false);
   const [userInput, setUserInput] = useState();
   const [increaseUserBid, setIncreaseUserBid] = useState(false);
-
+  // set state handlers
   function handlePlaceBid() {
     confirmState == false ? setConfirmState(true) : setConfirmState(false);
   }
-
+  // set state handlers
   function handleIncreaseBid() {
     increaseUserBid == false ? setIncreaseUserBid(true) : setIncreaseUserBid(false);
     confirmState == false ? setConfirmState(true) : setConfirmState(false);
   }
-
+  /**
+   * @description processes the action of a user; 
+   * @params type string; place_bid | increase_bid | revoke_bid
+   * @returns executes the handler in the parent component which fires off SDK hook
+  */
   function processBid(type: string) {
-    console.log('process bid running', type)
     if (type == 'revoke_bid') {
       handleExecuteBid(type);
     } else if (type == 'place_bid') {
-      console.log('this is userInput', userInput)
       if (userInput) {
         handleExecuteBid(type, userInput);
       }
     } else if (type == 'increase_bid') {
       if (userInput) {
-        // if (userInput < (highestBiddingValue + .1)) {
-        //   return toastResponse('ERROR', 'Bid not high enough', 'ERROR');
-        // };
         handleExecuteBid(type, userInput); 
       }
     }
-    
+    handleRefetch();
   }
-
+  /**
+   * @description set current user input regarding bid
+   * @params input object containing value
+   * @returns sets state
+  */
   function handleUserChange(val: any) {
     setUserInput(val.target.value);
   }
-
-  // if (hasPosition == true) setConfirmState(true);
 
   return (
     <Box>
@@ -110,7 +105,7 @@ const LiquidationBiddingModal = (props: LiquidationBiddingModalProps) => {
               )
               : 
               (
-                <Box>
+                <Box className={styles.baseWrapper}>
                 {
                   confirmState 
                   ?
