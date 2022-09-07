@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import PHoneyModal from 'components/PHoneyModal/PHoneyModal';
 import VeHoneyModal from 'components/VeHoneyModal/VeHoneyModal';
 import HoneyModal from 'components/HoneyModal/HoneyModal';
+import NftStakingModal from 'components/NftStakingModal/NftStakingModal';
 import { PublicKey } from '@solana/web3.js';
 import { useConnectedWallet } from '@saberhq/use-solana';
 import { useWalletKit } from '@gokiprotocol/walletkit';
@@ -29,6 +30,7 @@ const Governance: NextPage = () => {
   const [showPHoneyModal, setShowPHoneyModal] = useState(false);
   const [showVeHoneyModal, setShowVeHoneyModal] = useState(false);
   const [showHoneyModal, setShowHoneyModal] = useState(false);
+  const [showBeeModal, setShowBeeModal] = useState(false);
   const [vehoneySupply, setVehoneySupply] = useState('');
 
   const { govToken, lockedSupply } = useGovernor();
@@ -106,6 +108,12 @@ const Governance: NextPage = () => {
         isVisible={showHoneyModal}
       >
         <HoneyModal />
+      </ModalContainer>
+      <ModalContainer
+        onClose={() => setShowBeeModal(false)}
+        isVisible={showBeeModal}
+      >
+        <NftStakingModal />
       </ModalContainer>
 
       <Stack space="5" flex={1}>
@@ -269,6 +277,14 @@ const Governance: NextPage = () => {
                     variant="secondary"
                   >
                     HONEY → veHONEY
+                  </Button>
+                  <Button
+                    onClick={wallet ? () => setShowBeeModal(true) : connect}
+                    width="full"
+                    size="small"
+                    variant="secondary"
+                  >
+                    HGB → veHONEY
                   </Button>
                 </Stack>
               </Stack>
