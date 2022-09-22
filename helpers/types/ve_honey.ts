@@ -100,6 +100,16 @@ export type VeHoney = {
           "isSigner": false
         },
         {
+          "name": "governor",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "smartWallet",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
@@ -507,11 +517,42 @@ export type VeHoney = {
       "args": []
     },
     {
-      "name": "closeEscrow",
+      "name": "closeReceipt",
       "accounts": [
         {
           "name": "locker",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "nftReceipt",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowOwner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "fundsReceiver",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "closeEscrow",
+      "accounts": [
+        {
+          "name": "locker",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -531,7 +572,7 @@ export type VeHoney = {
         },
         {
           "name": "destinationTokens",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -832,6 +873,22 @@ export type VeHoney = {
           {
             "name": "proposalActivationMinVotes",
             "type": "u64"
+          },
+          {
+            "name": "nftStakeDurationUnit",
+            "type": "i64"
+          },
+          {
+            "name": "nftStakeBaseReward",
+            "type": "u64"
+          },
+          {
+            "name": "nftStakeDurationCount",
+            "type": "u8"
+          },
+          {
+            "name": "nftRewardHalvingStartsAt",
+            "type": "u8"
           }
         ]
       }
@@ -1038,149 +1095,120 @@ export type VeHoney = {
   ],
   "errors": [
     {
-      "code": 6000,
-      "name": "EscrowNotEnded",
-      "msg": "Escrow has not ended."
+      "code": 7000,
+      "name": "InvalidLocker"
     },
     {
-      "code": 6001,
-      "name": "InvalidLockerAdmin",
-      "msg": "Invalid locker admin"
+      "code": 7001,
+      "name": "InvalidLockerMint"
     },
     {
-      "code": 6002,
-      "name": "InvalidLocker",
-      "msg": "Invalid locker"
+      "code": 7002,
+      "name": "InvalidAccountOwner"
     },
     {
-      "code": 6003,
-      "name": "LockupDurationTooShort",
-      "msg": "Lockup duration must at least be the min stake duration."
+      "code": 7003,
+      "name": "InvalidTokenOwner"
     },
     {
-      "code": 6004,
-      "name": "LockupDurationTooLong",
-      "msg": "Lockup duration must at most be the max stake duration."
+      "code": 7004,
+      "name": "InvalidAssociatedTokenAccount"
     },
     {
-      "code": 6005,
-      "name": "RefreshCannotShorten",
-      "msg": "A voting escrow refresh cannot shorten the escrow time remaining."
+      "code": 7005,
+      "name": "InvalidRemainingAccounts"
     },
     {
-      "code": 6006,
-      "name": "MustProvideWhitelist",
-      "msg": "Program whitelist enabled; please provide whitelist entry and instructions sysvar"
+      "code": 7006,
+      "name": "InvalidProofType"
     },
     {
-      "code": 6007,
-      "name": "ProgramNotWhitelisted",
-      "msg": "CPI caller not whitelisted to invoke lock instruction."
+      "code": 7007,
+      "name": "InvalidProof"
     },
     {
-      "code": 6008,
-      "name": "EscrowOwnerNotWhitelisted",
-      "msg": "CPI caller not whitelisted for escrow owner to invoke lock instruction."
+      "code": 7100,
+      "name": "EscrowNotEnded"
     },
     {
-      "code": 6009,
-      "name": "EscrowExpired",
-      "msg": "Escrow was already expired."
+      "code": 7101,
+      "name": "EscrowExpired"
     },
     {
-      "code": 6010,
-      "name": "LockedSupplyMismatch",
-      "msg": "Token lock failed, locked supply mismatches the exact amount."
+      "code": 7102,
+      "name": "EscrowInUse"
     },
     {
-      "code": 6011,
-      "name": "EscrowInUse",
-      "msg": "The escrow has already locked."
+      "code": 7103,
+      "name": "EscrowNoBalance"
     },
     {
-      "code": 6012,
-      "name": "EscrowNoBalance",
-      "msg": "The escrow doesn't have balance"
+      "code": 7104,
+      "name": "LockupDurationTooShort"
     },
     {
-      "code": 6013,
-      "name": "ProposalMustBeActive",
-      "msg": "The proposal must be active"
+      "code": 7105,
+      "name": "LockupDurationTooLong"
     },
     {
-      "code": 6014,
-      "name": "GovernorMismatch",
-      "msg": "Governor mismatch"
+      "code": 7106,
+      "name": "RefreshCannotShorten"
     },
     {
-      "code": 6015,
-      "name": "SmartWalletMismatch",
-      "msg": "Smart wallet on governor mismatch"
+      "code": 7107,
+      "name": "ReceiptNotEnded"
     },
     {
-      "code": 6016,
-      "name": "ProgramIdMustBeExecutable",
-      "msg": "Program id must be executable"
+      "code": 7200,
+      "name": "MustProvideWhitelist"
     },
     {
-      "code": 6017,
-      "name": "InvalidAccountOwner",
-      "msg": "Invalid account owner"
+      "code": 7201,
+      "name": "ProgramNotWhitelisted"
     },
     {
-      "code": 6018,
-      "name": "InsufficientVotingPower",
-      "msg": "Insufficient voting power to activate a proposal"
+      "code": 7202,
+      "name": "EscrowOwnerNotWhitelisted"
     },
     {
-      "code": 6019,
-      "name": "InvalidLockerMint",
-      "msg": "Invalid locker token mint"
+      "code": 7203,
+      "name": "ProgramIdMustBeExecutable"
     },
     {
-      "code": 6020,
-      "name": "InvariantViolated",
-      "msg": "Invariant violated"
+      "code": 7204,
+      "name": "NoProofProvided"
     },
     {
-      "code": 6021,
-      "name": "InvalidProofType",
-      "msg": "Invalid proof type"
+      "code": 7300,
+      "name": "GovernorMismatch"
     },
     {
-      "code": 6022,
-      "name": "InvalidProof",
-      "msg": "Invalid NFT proof"
+      "code": 7301,
+      "name": "SmartWalletMismatch"
     },
     {
-      "code": 6023,
-      "name": "NoProofProvided",
-      "msg": "No proof provided"
+      "code": 7302,
+      "name": "ProposalMustBeActive"
     },
     {
-      "code": 6024,
-      "name": "InvalidTokenOwner",
-      "msg": "Invalid token owner"
+      "code": 7303,
+      "name": "InsufficientVotingPower"
     },
     {
-      "code": 6025,
-      "name": "InvalidAssociatedTokenAccount",
-      "msg": "Invalid associated token account"
+      "code": 7304,
+      "name": "LockedSupplyMismatch"
     },
     {
-      "code": 6026,
-      "name": "VestingDurationExceeded",
-      "msg": "NFT vesting duration exceeded"
+      "code": 7400,
+      "name": "InvariantViolated"
     },
     {
-      "code": 6027,
-      "name": "InvalidRemainingAccounts",
-      "msg": "Invalid remaining accounts"
+      "code": 7500,
+      "name": "VestingDurationExceeded"
     },
     {
-      "code": 6028,
-      "name": "NotClaimable",
-      "msg": "Not claimable"
+      "code": 7501,
+      "name": "NotClaimable"
     }
   ]
 };
@@ -1287,6 +1315,16 @@ export const IDL: VeHoney = {
           "isSigner": false
         },
         {
+          "name": "governor",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "smartWallet",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
@@ -1694,11 +1732,42 @@ export const IDL: VeHoney = {
       "args": []
     },
     {
-      "name": "closeEscrow",
+      "name": "closeReceipt",
       "accounts": [
         {
           "name": "locker",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "nftReceipt",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowOwner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "fundsReceiver",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "closeEscrow",
+      "accounts": [
+        {
+          "name": "locker",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1718,7 +1787,7 @@ export const IDL: VeHoney = {
         },
         {
           "name": "destinationTokens",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -2019,6 +2088,22 @@ export const IDL: VeHoney = {
           {
             "name": "proposalActivationMinVotes",
             "type": "u64"
+          },
+          {
+            "name": "nftStakeDurationUnit",
+            "type": "i64"
+          },
+          {
+            "name": "nftStakeBaseReward",
+            "type": "u64"
+          },
+          {
+            "name": "nftStakeDurationCount",
+            "type": "u8"
+          },
+          {
+            "name": "nftRewardHalvingStartsAt",
+            "type": "u8"
           }
         ]
       }
@@ -2225,149 +2310,120 @@ export const IDL: VeHoney = {
   ],
   "errors": [
     {
-      "code": 6000,
-      "name": "EscrowNotEnded",
-      "msg": "Escrow has not ended."
+      "code": 7000,
+      "name": "InvalidLocker"
     },
     {
-      "code": 6001,
-      "name": "InvalidLockerAdmin",
-      "msg": "Invalid locker admin"
+      "code": 7001,
+      "name": "InvalidLockerMint"
     },
     {
-      "code": 6002,
-      "name": "InvalidLocker",
-      "msg": "Invalid locker"
+      "code": 7002,
+      "name": "InvalidAccountOwner"
     },
     {
-      "code": 6003,
-      "name": "LockupDurationTooShort",
-      "msg": "Lockup duration must at least be the min stake duration."
+      "code": 7003,
+      "name": "InvalidTokenOwner"
     },
     {
-      "code": 6004,
-      "name": "LockupDurationTooLong",
-      "msg": "Lockup duration must at most be the max stake duration."
+      "code": 7004,
+      "name": "InvalidAssociatedTokenAccount"
     },
     {
-      "code": 6005,
-      "name": "RefreshCannotShorten",
-      "msg": "A voting escrow refresh cannot shorten the escrow time remaining."
+      "code": 7005,
+      "name": "InvalidRemainingAccounts"
     },
     {
-      "code": 6006,
-      "name": "MustProvideWhitelist",
-      "msg": "Program whitelist enabled; please provide whitelist entry and instructions sysvar"
+      "code": 7006,
+      "name": "InvalidProofType"
     },
     {
-      "code": 6007,
-      "name": "ProgramNotWhitelisted",
-      "msg": "CPI caller not whitelisted to invoke lock instruction."
+      "code": 7007,
+      "name": "InvalidProof"
     },
     {
-      "code": 6008,
-      "name": "EscrowOwnerNotWhitelisted",
-      "msg": "CPI caller not whitelisted for escrow owner to invoke lock instruction."
+      "code": 7100,
+      "name": "EscrowNotEnded"
     },
     {
-      "code": 6009,
-      "name": "EscrowExpired",
-      "msg": "Escrow was already expired."
+      "code": 7101,
+      "name": "EscrowExpired"
     },
     {
-      "code": 6010,
-      "name": "LockedSupplyMismatch",
-      "msg": "Token lock failed, locked supply mismatches the exact amount."
+      "code": 7102,
+      "name": "EscrowInUse"
     },
     {
-      "code": 6011,
-      "name": "EscrowInUse",
-      "msg": "The escrow has already locked."
+      "code": 7103,
+      "name": "EscrowNoBalance"
     },
     {
-      "code": 6012,
-      "name": "EscrowNoBalance",
-      "msg": "The escrow doesn't have balance"
+      "code": 7104,
+      "name": "LockupDurationTooShort"
     },
     {
-      "code": 6013,
-      "name": "ProposalMustBeActive",
-      "msg": "The proposal must be active"
+      "code": 7105,
+      "name": "LockupDurationTooLong"
     },
     {
-      "code": 6014,
-      "name": "GovernorMismatch",
-      "msg": "Governor mismatch"
+      "code": 7106,
+      "name": "RefreshCannotShorten"
     },
     {
-      "code": 6015,
-      "name": "SmartWalletMismatch",
-      "msg": "Smart wallet on governor mismatch"
+      "code": 7107,
+      "name": "ReceiptNotEnded"
     },
     {
-      "code": 6016,
-      "name": "ProgramIdMustBeExecutable",
-      "msg": "Program id must be executable"
+      "code": 7200,
+      "name": "MustProvideWhitelist"
     },
     {
-      "code": 6017,
-      "name": "InvalidAccountOwner",
-      "msg": "Invalid account owner"
+      "code": 7201,
+      "name": "ProgramNotWhitelisted"
     },
     {
-      "code": 6018,
-      "name": "InsufficientVotingPower",
-      "msg": "Insufficient voting power to activate a proposal"
+      "code": 7202,
+      "name": "EscrowOwnerNotWhitelisted"
     },
     {
-      "code": 6019,
-      "name": "InvalidLockerMint",
-      "msg": "Invalid locker token mint"
+      "code": 7203,
+      "name": "ProgramIdMustBeExecutable"
     },
     {
-      "code": 6020,
-      "name": "InvariantViolated",
-      "msg": "Invariant violated"
+      "code": 7204,
+      "name": "NoProofProvided"
     },
     {
-      "code": 6021,
-      "name": "InvalidProofType",
-      "msg": "Invalid proof type"
+      "code": 7300,
+      "name": "GovernorMismatch"
     },
     {
-      "code": 6022,
-      "name": "InvalidProof",
-      "msg": "Invalid NFT proof"
+      "code": 7301,
+      "name": "SmartWalletMismatch"
     },
     {
-      "code": 6023,
-      "name": "NoProofProvided",
-      "msg": "No proof provided"
+      "code": 7302,
+      "name": "ProposalMustBeActive"
     },
     {
-      "code": 6024,
-      "name": "InvalidTokenOwner",
-      "msg": "Invalid token owner"
+      "code": 7303,
+      "name": "InsufficientVotingPower"
     },
     {
-      "code": 6025,
-      "name": "InvalidAssociatedTokenAccount",
-      "msg": "Invalid associated token account"
+      "code": 7304,
+      "name": "LockedSupplyMismatch"
     },
     {
-      "code": 6026,
-      "name": "VestingDurationExceeded",
-      "msg": "NFT vesting duration exceeded"
+      "code": 7400,
+      "name": "InvariantViolated"
     },
     {
-      "code": 6027,
-      "name": "InvalidRemainingAccounts",
-      "msg": "Invalid remaining accounts"
+      "code": 7500,
+      "name": "VestingDurationExceeded"
     },
     {
-      "code": 6028,
-      "name": "NotClaimable",
-      "msg": "Not claimable"
+      "code": 7501,
+      "name": "NotClaimable"
     }
   ]
 };
